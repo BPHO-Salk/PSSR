@@ -8,8 +8,8 @@ from fastai.vision.models.unet import DynamicUnet
 from fastai.vision.models import resnet18, resnet34, resnet50
 from skimage.util import random_noise
 from skimage import filters
-from bpho import *
-from bpho.resnet import *
+from utils import *
+from utils.resnet import *
 
 torch.backends.cudnn.benchmark = True
 
