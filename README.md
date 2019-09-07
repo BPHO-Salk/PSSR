@@ -1,7 +1,5 @@
 # Point-Scanning Super-Resolution (PSSR)
 
-Core:
-
 BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v3)
 
 Pretrained models can be downloaded here: 
