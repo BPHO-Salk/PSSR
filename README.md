@@ -2,7 +2,7 @@
 
 Core:
 
-BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v2)
+BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v3)
 
 Pretrained models can be downloaded here: 
 * [PSSR for Electron Microscopy (EM)](https://www.dropbox.com/s/4o8n1jc1piivohz/PSSR_EM.pkl?dl=0)
