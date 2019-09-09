@@ -16,7 +16,7 @@ I know this is unusual, but we do have a beautifully written [PSSR Tweetorial](h
 
 ### Environment set up
 - Install Anaconda ([Learn more](https://docs.anaconda.com/anaconda/install/))
-- Create a new conda environment for PSSR: conda env create --file=env.yaml ([Learn more](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
+- Create a new conda environment for PSSR: `conda env create --file=env.yaml` ([Learn more](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
 
 ### EM inference
 Please refer to the handy [Inference_PSSR_for_EM.ipynb](https://github.com/BPHO-Salk/PSSR/blob/master/Inference_PSSR_for_EM.ipynb). You need to modify the path for the test images accordingly. Note the input pixel size needs to be 8 nm.
