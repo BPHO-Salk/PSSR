@@ -4,8 +4,8 @@
 
 BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v3)
 
-Data are hosted in 3DEM Dataverse: https://doi.org/10.18738/T8/YLCK5A, which includes:
-* All training, testing, and validation data
+All data is hosted in 3DEM Dataverse: https://doi.org/10.18738/T8/YLCK5A, which includes:
+* Training, testing, and validation data
 * Pretrained PSSR models for each image type described in the PSSR manuscript 
 * Environment set-up env.yml file that lists all prerequisite libraries.
 
