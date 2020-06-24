@@ -174,7 +174,6 @@ class NpyRawImageList(ImageList):
 
 class MultiImageImageList(MultiImageList):
     _label_cls, _square_show, _square_show_res = ImageList, False, False
-
     def show_xys(self,
                  xs,
                  ys,

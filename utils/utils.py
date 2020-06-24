@@ -5,7 +5,6 @@ from fastai.callbacks import *
 import shutil
 from skimage.filters import gaussian
 from skimage.io import imsave
-import PIL
 import imageio
 from scipy.ndimage.interpolation import zoom as npzoom
 from .czi import get_czi_shape_info, build_index, is_movie
@@ -18,7 +17,6 @@ import torch
 import math
 from .multi import MultiImage
 from time import sleep
-import shutil
 from skimage.util import random_noise
 from skimage import filters
 from torchvision.models import vgg16_bn
@@ -72,7 +70,6 @@ def get_feat_loss():
     return feat_loss
 
 def _down_up(x, scale=4, upsample=False, mode='bilinear'):
-    set_trace()
     x = F.interpolate(x[None], scale_factor=1/scale)[0]
     if upsample:
         x = F.interpolate(x[None], scale_factor=scale, mode=mode)[0]
@@ -81,8 +78,6 @@ def _down_up(x, scale=4, upsample=False, mode='bilinear'):
 down_up = TfmPixel(_down_up)
 
 def _my_noise_old(x, gauss_sigma:uniform=0.01, pscale:uniform=10):
-    #print('noise')
-    #set_trace()
     xn = x.numpy()
     xorig_max = xn.max()
     xn = np.random.poisson(xn*pscale)/pscale
@@ -155,12 +150,12 @@ def make_mask(shape, overlap, top=True, left=True, right=True, bottom=True):
 
 def unet_image_from_tiles_partialsave(learn, in_img, tile_sz=(256, 256), scale=(4, 4), overlap_pct=(0.50, 0.50), img_info=None):
     """
-    This function run inference on a trained model and removes tiling artifacts.  
+    This function run inference on a trained model and removes tiling artifacts.
 
     Input:
     - learn: learner
     - in_img: input image (2d/3d), floating array
-    - tile_sz: XY dimension of the small tile that will be fed into GPU [p q] 
+    - tile_sz: XY dimension of the small tile that will be fed into GPU [p q]
     - scale: upsampling scale
     - overlap_pct: overlap percent while cropping the tiles in xy dimension [alpha beta],
                    floating tuple, ranging from 0 to 1
@@ -169,7 +164,7 @@ def unet_image_from_tiles_partialsave(learn, in_img, tile_sz=(256, 256), scale=(
     Output:
     - predicted image (2d), ranging from 0 to 1
 
-    """    
+    """
     n_frames = in_img.shape[0]
 
     if img_info:
@@ -190,7 +185,7 @@ def unet_image_from_tiles_partialsave(learn, in_img, tile_sz=(256, 256), scale=(
     numY, epsY = divmod(Y-q, q-int(q*beta)) if Y-q > 0 else (0, Y)
     numX = int(numX)+1
     numY = int(numY)+1
-    
+
     for i in range(numX+1):
         for j in range(numY+1):
             crop_x_start = int(i*(1-alpha)*p)
@@ -226,7 +221,7 @@ def unet_image_from_tiles_partialsave(learn, in_img, tile_sz=(256, 256), scale=(
             out_x_end = int(p-0.5*int(alpha*p)+i*(p-int(alpha*p))) if crop_x_end != X else X
             out_y_start = int(q-0.5*int(beta*q)+(j-1)*(q-int(beta*q))) if crop_y_start != 0 else 0
             out_y_end = int(q-0.5*int(beta*q)+j*(q-int(beta*q))) if crop_y_end != Y else Y
-            assembled[out_y_start:out_y_end, out_x_start:out_x_end] = out_tile[tileROI_y_start:tileROI_y_end, tileROI_x_start:tileROI_x_end] 
+            assembled[out_y_start:out_y_end, out_x_start:out_x_end] = out_tile[tileROI_y_start:tileROI_y_end, tileROI_x_start:tileROI_x_end]
 
     assembled -= assembled.min()
     assembled /= assembled.max()

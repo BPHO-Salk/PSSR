@@ -1,3 +1,33 @@
+"""
+image_gen.py
+-------
+PSSR PIPELINE - STEP 4:
+Inference -  Inference using a trained PSSR model.
+
+This script is for actual use of your trained PSSR model - applying PSSR to
+holdout testing images (tif/tiff and czi files only)
+
+Parameters:
+-------
+- src_dir: str, path of the input source directory.
+- out_dir: str, path of the ouput inference directory
+- model_dir: str, path of the model directory, 'stats/models' by default (optional)
+- gpu: int, specify which GPU to run on, None by default. (optional)
+- models: str, list models to run, None by default. (optional)
+- baselines: boolean, True if bilinear-upsampled version of the input files is also
+             needed. False by default. (optional)
+- mode: str, image type, 8-bit pixels (L) or 4x8-bit pixels - true color with
+        transparency mask (RGBA), 'L' by default. (optional)
+
+Returns:
+-------
+- Super-resolution version of the low-resolution input files will be saved on disk.
+
+Examples:
+-------
+
+"""
+
 import sys
 import yaml
 import pandas as pd
@@ -26,12 +56,12 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
         n_frame = max(n_depth, n_time)
         offset_frames = n_frame // 2
 
-        if n_frame > img_tif.n_frames: 
-            if img_tif.n_frames == 1: 
+        if n_frame > img_tif.n_frames:
+            if img_tif.n_frames == 1:
                 times = n_frame
                 img_tif = np.array(img_tif)
                 data = np.repeat(img_tif[None],5,axis=0).astype(np.float32)
-            else:       
+            else:
                 return []
         else:
             times = img_tif.n_frames
@@ -41,7 +71,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
                 img_tif.load()
                 img_tifs.append(np.array(img_tif).copy())
             data = np.stack(img_tifs).astype(np.float32)
-        
+
         data, img_info = img_to_float(data)
         img_tiffs = []
         time_range = list(range(offset_frames, times - offset_frames))
@@ -54,7 +84,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
         imgs = np.concatenate(img_tiffs)
         if processor!='bilinear':
-            fldr_name = f'{out_fn.parent}/{processor}' 
+            fldr_name = f'{out_fn.parent}/{processor}'
         else:
             fldr_name = out_fn.parent.parent.parent/processor/out_fn.parent.stem
         save_name = f'{fn.stem}_{processor}.tif'
@@ -62,11 +92,9 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
         if imgs.size < 4e9:
             imageio.mimwrite(out_fldr/save_name, imgs)
-            #print(f'wrote {out_fldr/save_name}')
-        else: 
+        else:
             imageio.mimwrite(out_fldr/save_name, imgs, bigtiff=True)
-            #print(f'wrote {out_fldr/save_name} - bigtiff')
-        #imageio.mimwrite((out_fldr/save_name).with_suffix('.mp4'), imgs, fps=30, macro_block_size=None) 
+        #imageio.mimwrite((out_fldr/save_name).with_suffix('.mp4'), imgs, fps=30, macro_block_size=None)
 
 def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_time=1, mode='L'):
     stats = []
@@ -134,7 +162,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
                     all_y = np.concatenate(imgs)
                     if processor!='bilinear':
-                        fldr_name = f'{out_fn.parent}/{processor}' 
+                        fldr_name = f'{out_fn.parent}/{processor}'
                     else:
                         fldr_name = out_fn.parent.parent.parent/processor/out_fn.parent.stem
                     save_name = f'{fn.stem}_{processor}.tif'
@@ -144,9 +172,9 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
                     if all_y.size < 4e9:
                         imageio.mimwrite(out_fldr/save_name, all_y)
-                    else: 
+                    else:
                         imageio.mimwrite(out_fldr/save_name, all_y, bigtiff=True)
-                    #imageio.mimwrite(out_fldr/save_name, all_y) 
+                    #imageio.mimwrite(out_fldr/save_name, all_y)
                     #imageio.mimwrite((out_fldr/save_name).with_suffix('.mp4'), all_y, fps=30, macro_block_size=None)
         else:
             imgs = []
@@ -167,7 +195,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
                         imgs.append(pred_img8[None])
             all_y = np.concatenate(imgs)
             if processor!='bilinear':
-                fldr_name = f'{out_fn.parent}/{processor}' 
+                fldr_name = f'{out_fn.parent}/{processor}'
             else:
                 fldr_name = out_fn.parent.parent.parent/processor/out_fn.parent.stem
             save_name = f'{fn.stem}_{processor}.tif'
@@ -175,9 +203,8 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
             if all_y.size < 4e9:
                 imageio.mimwrite(out_fldr/save_name, all_y)
-            else: 
+            else:
                 imageio.mimwrite(out_fldr/save_name, all_y, bigtiff=True)
-            #imageio.mimwrite(out_fldr/save_name, all_y)        
 
 def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, mbar=None):
     proc_map = {
@@ -218,7 +245,7 @@ def main(
     baseline_dir = []
     processors = []
     stats = []
-    if baselines: 
+    if baselines:
         processors += ['bilinear']  #'bicubic','original'
         baseline_dir = ensure_folder('stats')
     if models: processors += [m for m in models]

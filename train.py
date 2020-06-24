@@ -1,3 +1,70 @@
+"""
+train.py
+-------
+PSSR PIPELINE - STEP 3:
+Train your data -  Train a PSSR model using a dataset generated in step 2.
+
+Parameters:
+-------
+- gpu: str, GPU to run on", all GPUs will be used if not flagged. (optional)
+- arch: str, encode architecture, 'wnresnet34' by default. (optional)
+- bs: int, batch size per gpu, 8 by default. (optional)
+- lr: float, learning rate, 1e-4 by default. (optional)
+- lr_start: float, learning rate starts at, None by default. (optional)
+- noise: boolean, add dynamic crappifier, False by default. (optional)
+- freeze: boolean, freeze up to last layer group, False by default. (optional)
+- pretrain: boolean, if to use a pre-trained arch, False by default. (optional)
+- size: int, img size, 256 by default. (optional)
+- cycles: int, num of cycles, 5 by default. (optional)
+- load_name: str, load model name, None by default. (optional)
+- save_name: str, model save name, 'combo' by default. (optional)
+- datasetname: str, dataset name, 'tiles_002' by default. (optional)
+- tile_sz: int, tile size, 256 by default. (optional)
+- attn: boolean, self attention, True by default. (optional)
+- blur: boolean, upsample blur, True by default. (optional)
+- final_blur: boolean, final upsample blur, True by default. (optional)
+- last_cross: boolean, last_cross, True by default. (optional)
+- bottle: boolean, bottleneck, True by default. (optional)
+- cutout: boolean, cutout, False by default. (optional)
+- rrdb: boolean, use RRDB_Net, False by default. (optional)
+- nf: int, rrdb nf, 32 by default. (optional)
+- nb: int, rrdb nb, 32 by default. (optional)
+- gcval: int, rrdb gc, 32 by default. (optional)
+- clip_grad: float, gradient clipping, None by default. (optional)
+- loss_scale: float, loss scale, None by default. (optional)
+- feat_loss: boolean, feat_loss, False by default. (optional)
+- n_frames: int, number of frames, 1 by default. (optional)
+- lr_type: str, training input, (s)ingle, (t) multi or (z) multi, 's' by default. (optional)
+- plateau: boolean, cut LR on plateaus, False by default. (optional)
+- old_unet: boolean, use old unet_learner, False by default. (optional)
+- skip_train: boolean, skip training, e.g. to adjust size, False by default. (optional)
+- mode: str, image mode like L or RGB, 'L' by default. (optional)
+- norm: boolean, normalize data, True by default. (optional)
+- l1_loss: boolean, use L1 loss, False by default. (optional)
+- debug: boolean, debug mode, False by default. (optional)
+
+Returns:
+-------
+- trained PSSR model:
+    - .pth models
+    - .pkl models.
+
+Examples:
+-------
+Example 1: Train a singleframe model
+Train 50 epochs first, and continue training with another 50 epochs.
+python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_5000_AG_SP
+          --cycles 50 --save_name single_mito_5000_AG_SP_e50 --lr_type s --n_frames 1
+python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_5000_AG_SP
+          --cycles 50 --save_name single_mito_5000_AG_SP_e100 --load_name single_mito_5000_AG_SP_e50_best_512 --lr_type s --n_frames 1
+
+Example 2: Train a multiframe model
+Train 50 epochs first, and continue training with another 50 epochs.
+python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_5000_AG_SP
+          --cycles 50 --save_name multit_5_mito_5000_AG_SP_e50 --lr_type t --n_frames 5
+python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_5000_AG_SP
+          --cycles 50 --save_name multit_5_mito_5000_AG_SP_e100 --load_name multit_5_mito_5000_AG_SP_e50_best_512 --lr_type t --n_frames 5
+"""
 
 import yaml
 from fastai.script import *
@@ -10,7 +77,7 @@ from skimage.util import random_noise
 from skimage import filters
 from utils import *
 from utils.resnet import *
-
+from pdb import set_trace
 torch.backends.cudnn.benchmark = True
 
 def get_src(x_data, y_data, n_frames=1, mode='L'):
@@ -29,7 +96,6 @@ def get_src(x_data, y_data, n_frames=1, mode='L'):
                 .label_from_func(map_to_hr, convert_mode=mode))
     return src
 
-
 def get_data(bs, size, x_data, y_data,
              n_frames=1,
              max_rotate=10.,
@@ -44,6 +110,7 @@ def get_data(bs, size, x_data, y_data,
              norm=False,
              **kwargs):
     src = get_src(x_data, y_data, n_frames=n_frames, mode=mode)
+
     x_tfms, y_tfms = get_xy_transforms(
                           max_rotate=max_rotate,
                           min_zoom=min_zoom, max_zoom=max_zoom,
@@ -62,9 +129,6 @@ def get_data(bs, size, x_data, y_data,
         data = data.normalize(do_y=True)
     data.c = 3
     return data
-
-
-
 
 @call_parse
 def main(
@@ -127,8 +191,6 @@ def main(
         hr_tifs = dataset/f'hr_t_{tile_sz:d}{multi_str}'
         lr_tifs = dataset/f'lr_t_{tile_sz:d}{multi_str}'
 
-    print(datasets, dataset, hr_tifs)
-
     model_dir = 'models'
 
     if not debug:
@@ -142,7 +204,7 @@ def main(
 
     if feat_loss: loss = get_feat_loss()
     elif l1_loss: loss = F.l1_loss
-    else: loss = F.mse_loss 
+    else: loss = F.mse_loss
     print('loss: ', loss)
     metrics = sr_metrics
 
@@ -151,16 +213,18 @@ def main(
     arch = eval(arch)
 
     print('bs:', bs, 'size: ', size, 'ngpu:', n_gpus)
-    data = get_data(bs, size, lr_tifs, hr_tifs, n_frames=n_frames,  max_zoom=4., 
+    data = get_data(bs, size, lr_tifs, hr_tifs, n_frames=n_frames,  max_zoom=4.,
                     use_cutout=cutout, use_noise=noise, mode=mode, norm=norm)
     callback_fns = []
+
+    #if gradient_clip:
+        #callback_fns.append(partial(GradientClipping, clip=0.1))
     if plateau:
         callback_fns.append(partial(ReduceLROnPlateauCallback, patience=1))
     if gpu == 0 or gpu is None:
         if feat_loss:
             callback_fns = [LossMetrics]
         callback_fns.append(partial(SaveModelCallback, name=f'{save_name}_best_{size}'))
-
 
     if rrdb:
         rrdb_args = {
