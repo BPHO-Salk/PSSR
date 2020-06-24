@@ -5,7 +5,7 @@ from scipy.ndimage.interpolation import zoom as npzoom
 from skimage.transform import rescale
 import PIL
 
-def new_crap_AG_SP(x, gauss_sigma:uniform=0.01, pscale:uniform=10, scale=4, upsample=False):
+def new_crap_AG_SP(x, scale=4, upsample=False):
     xn = np.array(x)
     xorig_max = xn.max()
     xn = xn.astype(np.float32)
@@ -27,7 +27,7 @@ def new_crap_AG_SP(x, gauss_sigma:uniform=0.01, pscale:uniform=10, scale=4, upsa
     xn = rescale(xn, scale=1/scale, order=1, multichannel=multichannel)
     return PIL.Image.fromarray(xn.astype(np.uint8))
 
-def new_crap(x, gauss_sigma:uniform=0.01, pscale:uniform=10, scale=4, upsample=False):
+def new_crap(x, scale=4, upsample=False):
     xn = np.array(x)
     xorig_max = xn.max()
     xn = xn.astype(np.float32)
