@@ -33,10 +33,11 @@ def num_channels(learn):
     else:
         return ps[1].shape[1]
 
-def build_processor(name, model_dir):
+def build_processor(name, model_dir, use_tiles):
     learn = load_learner(model_dir, f'{name}.pkl').to_fp16()
     tile_sz = int(name.split('_')[-1])
-    def learn_processor(img, img_info=None, mode='L'):
+    def learn_processor(img, img_info=None, mode='L', use_tiles):
+        if not use_tiles: tile_sz = img.shape[0] #assume img is a square
         if len(img.shape) == 2:
             img = img[None]
             if mode == 'RGB': img = img.repeat(3, axis=0)
@@ -47,9 +48,9 @@ def build_processor(name, model_dir):
     return learn_processor, num_channels(learn)
 
 
-def get_named_processor(name, model_dir):
+def get_named_processor(name, model_dir, use_tiles):
     if not name in processors:
-        proc, num_chan = build_processor(name, model_dir)
+        proc, num_chan = build_processor(name, model_dir, use_tiles)
         processors[name] = proc, num_chan
     proc, num_chan = processors.get(name, None)
     return proc, num_chan

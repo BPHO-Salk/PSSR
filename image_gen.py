@@ -16,6 +16,9 @@ Parameters:
 - models: str, list models to run, None by default. (optional)
 - baselines: boolean, True if bilinear-upsampled version of the input files is also
              needed. False by default. (optional)
+- use_tiles: boolean, True if breaking the image to tiles for inference is needed.
+             This flag is useful when the testing image is too big to fit to the
+             GPU card during inference. It is False by default. (optional)
 - mode: str, image type, 8-bit pixels (L) or 4x8-bit pixels - true color with
         transparency mask (RGBA), 'L' by default. (optional)
 
@@ -51,7 +54,7 @@ def check_dir(p):
         sys.exit(1)
     return p
 
-def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_time=1, mode='L'):
+def process_tif(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=1, n_time=1, mode='L'):
     with PIL.Image.open(fn) as img_tif:
         n_frame = max(n_depth, n_time)
         offset_frames = n_frame // 2
@@ -78,7 +81,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
         for t in progress_bar(time_range):
             time_slice = slice(t-offset_frames, t+offset_frames+1)
             img = data[time_slice].copy()
-            pred_img = proc_func(img, img_info=img_info, mode=mode)
+            pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
             pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
             img_tiffs.append(pred_img8[None])
 
@@ -96,7 +99,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
             imageio.mimwrite(out_fldr/save_name, imgs, bigtiff=True)
         #imageio.mimwrite((out_fldr/save_name).with_suffix('.mp4'), imgs, fps=30, macro_block_size=None)
 
-def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_time=1, mode='L'):
+def process_czi(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=1, n_time=1, mode='L'):
     stats = []
     with czifile.CziFile(fn) as czi_f:
         proc_axes, proc_shape = get_czi_shape_info(czi_f)
@@ -136,7 +139,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
 
                         save_name = f'{proc_name}_{item.stem}_{tag}'
 
-                        pred_img = proc_func(img, img_info=img_info, mode=mode)
+                        pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
                         pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
                         PIL.Image.fromarray(pred_img8).save(out_fn)
         elif n_time > 1:
@@ -156,7 +159,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
                                 'Y': slice(0, y)
                         })
                         img = data[idx].copy()
-                        pred_img = proc_func(img, img_info=img_info, mode=mode)
+                        pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
                         pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
                         imgs.append(pred_img8[None])
 
@@ -206,12 +209,12 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_tim
             else:
                 imageio.mimwrite(out_fldr/save_name, all_y, bigtiff=True)
 
-def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, mbar=None):
+def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, use_tiles, mbar=None):
     proc_map = {
         '.tif': process_tif,
         '.czi': process_czi
     }
-    proc_func, num_chan = get_named_processor(processor, model_dir)
+    proc_func, num_chan = get_named_processor(processor, model_dir, use_tiles)
     src_files = list(src_dir.glob('**/*.czi'))
     src_files += list(src_dir.glob('**/*.tif'))
 
@@ -224,7 +227,7 @@ def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, mb
             if 'multiz' in processor: n_depth = num_chan
             if 'multit' in processor: n_time = num_chan
             print('File being processed: ', fn)
-            file_proc(fn, processor, proc_func, out_fn, baseline_dir, n_depth=n_depth, n_time=n_time, mode=mode)
+            file_proc(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=n_depth, n_time=n_time, mode=mode)
 
 @call_parse
 def main(
@@ -234,6 +237,7 @@ def main(
         gpu: Param("GPU to run on", int, required=True) = None,
         models: Param("list models to run", str, nargs='+')=None,
         baselines: Param("build bilinear", action='store_true')=False,
+        use_tiles: Param("flag for tile inference", action='store_True')=False,
         mode: Param("L or RGBA", str)='L',
 ):
     print('on gpu: ', gpu)
@@ -252,4 +256,4 @@ def main(
     mbar = master_bar(processors)
     for proc in mbar:
         mbar.write(f'processing {proc}')
-        process_files(src_dir, out_dir, model_dir, baseline_dir, proc, mode, mbar=mbar)
+        process_files(src_dir, out_dir, model_dir, baseline_dir, proc, mode, use_tiles, mbar=mbar)
