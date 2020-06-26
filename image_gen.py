@@ -28,12 +28,11 @@ Returns:
 
 Examples:
 -------
-
+python image_gen.py stats/LR stats/LR-PSSR --models s_1_mito --use_tiles --gpu 0 
 """
 
 import sys
 import yaml
-import pandas as pd
 from fastai.script import *
 from fastai.vision import *
 from fastai.callbacks import *
@@ -54,7 +53,7 @@ def check_dir(p):
         sys.exit(1)
     return p
 
-def process_tif(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=1, n_time=1, mode='L'):
+def process_tif(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_time=1, mode='L'):
     with PIL.Image.open(fn) as img_tif:
         n_frame = max(n_depth, n_time)
         offset_frames = n_frame // 2
@@ -81,7 +80,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_dep
         for t in progress_bar(time_range):
             time_slice = slice(t-offset_frames, t+offset_frames+1)
             img = data[time_slice].copy()
-            pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
+            pred_img = proc_func(img, img_info=img_info, mode=mode)
             pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
             img_tiffs.append(pred_img8[None])
 
@@ -99,7 +98,7 @@ def process_tif(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_dep
             imageio.mimwrite(out_fldr/save_name, imgs, bigtiff=True)
         #imageio.mimwrite((out_fldr/save_name).with_suffix('.mp4'), imgs, fps=30, macro_block_size=None)
 
-def process_czi(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=1, n_time=1, mode='L'):
+def process_czi(fn, processor, proc_func, out_fn, baseline_dir, n_depth=1, n_time=1, mode='L'):
     stats = []
     with czifile.CziFile(fn) as czi_f:
         proc_axes, proc_shape = get_czi_shape_info(czi_f)
@@ -110,12 +109,6 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_dep
 
         data = czi_f.asarray().astype(np.float32)
         data, img_info = img_to_float(data)
-        # mi, ma = img_info['mi'], img_info['ma']
-        # data = np.clip(data, mi, ma)
-        # data -= mi
-        # img_info['real_max'] = data.max()
-        # img_info['ma'] = data.max()
-        # img_info['mi'] = 0.
 
         if depths < n_depth: return
         if times < n_time: return
@@ -139,7 +132,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_dep
 
                         save_name = f'{proc_name}_{item.stem}_{tag}'
 
-                        pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
+                        pred_img = proc_func(img, img_info=img_info, mode=mode)
                         pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
                         PIL.Image.fromarray(pred_img8).save(out_fn)
         elif n_time > 1:
@@ -159,7 +152,7 @@ def process_czi(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_dep
                                 'Y': slice(0, y)
                         })
                         img = data[idx].copy()
-                        pred_img = proc_func(img, use_tiles, img_info=img_info, mode=mode)
+                        pred_img = proc_func(img, img_info=img_info, mode=mode)
                         pred_img8 = (pred_img * np.iinfo(np.uint8).max).astype(np.uint8)
                         imgs.append(pred_img8[None])
 
@@ -224,10 +217,10 @@ def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, us
         file_proc = proc_map.get(fn.suffix, None)
         if file_proc:
             n_depth = n_time = 1
-            if 'multiz' in processor: n_depth = num_chan
-            if 'multit' in processor: n_time = num_chan
+            if 'z_' in processor: n_depth = num_chan
+            if 't_' in processor: n_time = num_chan
             print('File being processed: ', fn)
-            file_proc(fn, processor, proc_func, out_fn, baseline_dir, use_tiles, n_depth=n_depth, n_time=n_time, mode=mode)
+            file_proc(fn, processor, proc_func, out_fn, baseline_dir, n_depth=n_depth, n_time=n_time, mode=mode)
 
 @call_parse
 def main(
