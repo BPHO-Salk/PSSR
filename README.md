@@ -18,7 +18,7 @@ Google Colaboratory (Colab) version of PSSR is now ready. ([PSSR - Colab for pro
 
 Another PSSR Colab version that orients to non-programmers is also going to be released soon. ([PSSR - Colab for non-programmers (I'M WORKING ON IT)](https://github.com/BPHO-Salk/PSSR/tree/master/colab_notebooks/))
 
-Very few libraries need to be installed manually for PSSR Colab verion - most dependencies are preinstalled in the Colab environment. This makes the environment set-up step painless and you will be able to quickly get straight to the real fun. However, it also means some of the libraries you will be using are more recent than the ones in the environment used for the manuscript, which can be set-up according to the instruction below.
+Very few libraries need to be installed manually for PSSR Colab verion - most dependencies are preinstalled in the Colab environment. This makes the environment set-up step painless and you will be able to quickly get straight to the real fun. However, it also means some of the libraries you will be using are more recent than the ones used for the manuscript, which can be accessed from the instruction below.
 
 ### Run PSSR from the command line 
 
