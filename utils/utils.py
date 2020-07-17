@@ -283,18 +283,17 @@ def unet_multi_image_from_tiles(learn, in_img, tile_sz=128, scale=4, wsize=3):
 # take float in with info about mi,ma,max in and spits out (0-1.0)
 def unet_image_from_tiles_blend(learn, in_img, use_tiles, tile_sz=256, scale=4, overlap_pct=5.0, img_info=None):
     n_frames = in_img.shape[0]
-    h,w = in_img.shape[1:3]
-    assembled = np.zeros((h,w))
-    if not use_tiles: tile_sz = h #assume it is a square
-
     if img_info:
         mi, ma, imax, real_max = [img_info[fld] for fld in ['mi','ma','img_max','real_max']]
         in_img /= real_max
         # in_img = ((in_img - mi) / (ma - mi + 1e-20)).clip(0.,1.)
     else:
         mi, ma, imax, real_max = 0., 1., 1., 1.
-
     in_img  = np.stack([npzoom(in_img[i], scale, order=1) for i in range(n_frames)])
+    h,w = in_img.shape[1:3]
+    assembled = np.zeros((h,w))
+
+    if not use_tiles: tile_sz = h #assume it is a square
     overlap = int(tile_sz*(overlap_pct/100.) // 2 * 2)
     step_sz = tile_sz - overlap
 
