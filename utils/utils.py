@@ -297,7 +297,6 @@ def unet_image_from_tiles_blend(learn, in_img, use_tiles, tile_sz=256, scale=4, 
     overlap = int(tile_sz*(overlap_pct/100.) // 2 * 2)
     step_sz = tile_sz - overlap
 
-
     x_seams = set()
     y_seams = set()
 
