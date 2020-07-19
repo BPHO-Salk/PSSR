@@ -308,7 +308,6 @@ def unet_image_from_tiles_blend(learn, in_img, use_tiles, tile_sz=256, scale=4, 
             y_end = min(y_start + tile_sz, h)
             src_tile = in_img[:,y_start:y_end,x_start:x_end]
 
-
             in_tile = torch.zeros((tile_sz, tile_sz, n_frames))
             in_x_size = x_end - x_start
             in_y_size = y_end - y_start
@@ -338,11 +337,9 @@ def unet_image_from_tiles_blend(learn, in_img, use_tiles, tile_sz=256, scale=4, 
             out_y_start = top_adj
             out_x_end = in_x_size - right_adj
             out_y_end = in_y_size - bot_adj
-
             assembled[trim_y_start:trim_y_end, trim_x_start:trim_x_end] = out_tile[out_y_start:out_y_end, out_x_start:out_x_end]
-
             if trim_x_start != 0: x_seams.add(trim_x_start)
-            if trim_y_start != 0: y_seams.add(trim_y_end)
+            if trim_y_start != 0: y_seams.add(trim_y_start)
 
     blur_rects = []
     blur_size = 5
