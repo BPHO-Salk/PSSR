@@ -45,11 +45,6 @@ This software is only supported for Linux, and has been tested on Ubuntu 18.04.
 #### Python Dependencies
 PSSR is mainly written with Fastai, and final models used in the manuscript were generated using fast.ai v1.0.55 library.
 
-```
-fastai
-czifile
-```
-
 ### Environment Set-up
 - Install Anaconda ([Learn more](https://docs.anaconda.com/anaconda/install/))
 - Create a new conda environment for PSSR: `conda env create --file=env.yaml` ([Learn more](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
