@@ -46,8 +46,8 @@ This software is only supported for Linux, and has been tested on Ubuntu 18.04.
 PSSR is mainly written with Fastai, and final models used in the manuscript were generated using fast.ai v1.0.55 library.
 
 ```
-fastai `pip install fastai`
-czifile `pip install czifile`
+fastai
+czifile
 ```
 
 ### Environment Set-up
@@ -59,6 +59,19 @@ Please refer to the handy [Inference_PSSR_for_EM.ipynb](https://github.com/BPHO-
 
 # Citation
 Please cite our work if you find this work useful for your research: 
+```
+@article{Fang2019,
+abstract = {Point scanning imaging systems (e.g. scanning electron or laser scanning confocal microscopes) are perhaps the most widely used tools for high resolution cellular and tissue imaging. Like all other imaging modalities, the resolution, speed, sample preservation, and signal-to-noise ratio (SNR) of point scanning systems are difficult to optimize simultaneously. In particular, point scanning systems are uniquely constrained by an inverse relationship between imaging speed and pixel resolution. Here we show these limitations can be mitigated via the use of deep learning-based super-sampling of undersampled images acquired on a point-scanning system, which we termed point-scanning super-resolution (PSSR) imaging. Oversampled, high SNR ground truth images acquired on scanning electron or Airyscan laser scanning confocal microscopes were ‘crappified' to generate semi-synthetic training data for PSSR models that were then used to restore real-world undersampled images. Remarkably, our EM PSSR model could restore undersampled images acquired with different optics, detectors, samples, or sample preparation methods in other labs. PSSR enabled previously unattainable 2nm resolution images with our serial block face scanning electron microscope system. For fluorescence, we show that undersampled confocal images combined with a multiframe PSSR model trained on Airyscan timelapses facilitates Airyscan-equivalent spatial resolution and SNR with {\~{}}100x lower laser dose and 16x higher frame rates than corresponding high-resolution acquisitions. In conclusion, PSSR facilitates point-scanning image acquisition with otherwise unattainable resolution, speed, and sensitivity.},
+author = {Fang, Linjing and Monroe, Fred and Novak, Sammy Weiser and Kirk, Lyndsey and Schiavon, Cara R and Yu, Seungyoon B and Zhang, Tong and Wu, Melissa and Kastner, Kyle and Kubota, Yoshiyuki and Zhang, Zhao and Pekkurnaz, Gulcin and Mendenhall, John and Harris, Kristen and Howard, Jeremy and Manor, Uri},
+doi = {10.1101/740548},
+journal = {bioRxiv},
+month = {jan},
+pages = {740548},
+title = {{Deep Learning-Based Point-Scanning Super-Resolution Imaging}},
+url = {http://biorxiv.org/content/early/2019/09/04/740548.abstract},
+year = {2019}
+}
+```
 
 # License
 Licensed under BSD 3-Clause License.
