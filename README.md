@@ -1,6 +1,6 @@
 # Point-Scanning Super-Resolution (PSSR)
 
-This repository hosts the Pytorch implementation source code for Point-Scanning Super-Resolution (PSSR), a Deep Learning-based framework that faciliates the otherwise unattainable resolution, speed and sensitivity of point-scanning imaging systems. 
+This repository hosts the PyTorch implementation source code for Point-Scanning Super-Resolution (PSSR), a Deep Learning-based framework that faciliates the otherwise unattainable resolution, speed and sensitivity of point-scanning imaging systems. 
 
 BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v3)
 
