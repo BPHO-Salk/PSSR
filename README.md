@@ -22,7 +22,7 @@ Here we show these limitations can be mitigated via the use of Deep Learning-bas
 
 # Data Availability
 
-All data is hosted in 3DEM Dataverse: https://doi.org/10.18738/T8/YLCK5A, which includes:
+All data are hosted in 3DEM Dataverse: https://doi.org/10.18738/T8/YLCK5A, which include:
 * Training, testing, and validation data
 * Pretrained PSSR models for each image type described in the PSSR manuscript 
 * Environment set-up env.yml file that lists all prerequisite libraries.
