@@ -7,7 +7,7 @@ BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](
 There is also a beautifully written [PSSR Tweetorial](https://twitter.com/manorlaboratory/status/1169624396891185152?s=20) that explains the whole development story of PSSR.
 
 
-![PSSR](example_imgs/em_example.png)
+![PSSR](example_imgs/em_test_results.png)
 
 - [Overview](#overview)
 - [Data Availability](#data-availablity)
