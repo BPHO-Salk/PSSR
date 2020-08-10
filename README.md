@@ -62,7 +62,7 @@ doi = {10.1101/740548},
 journal = {bioRxiv},
 month = {jan},
 pages = {740548},
-title = {{Deep Learning-Based Point-Scanning Super-Resolution Imaging}},
+title = {Deep Learning-Based Point-Scanning Super-Resolution Imaging},
 url = {http://biorxiv.org/content/early/2019/09/04/740548.abstract},
 year = {2019}
 }
