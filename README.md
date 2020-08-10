@@ -12,6 +12,7 @@ There is also a beautifully written [PSSR Tweetorial](https://twitter.com/manorl
 - [Overview](#overview)
 - [Data Availability](#data-availablity)
 - [Instruction of Use](#instruction-of-use)
+- [Citation](#citation)
 - [License](#license)
 
 # Overview
