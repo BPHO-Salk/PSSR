@@ -8,7 +8,9 @@ There is also a beautifully written [PSSR Tweetorial](https://twitter.com/manorl
 
 **Update**: This work has been published in Nature Methods.
 
-![EM](example_imgs/em_test_results.png)
+[comment]: <![EM](example_imgs/em_test_results.png)>
+
+<img src="example_imgs/em_test_results.png" width=800 align=center>
 
 [comment]: <![Fluo]()> 
 
