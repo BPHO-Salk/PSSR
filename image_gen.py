@@ -28,7 +28,7 @@ Returns:
 
 Examples:
 -------
-python image_gen.py stats/LR stats/LR-PSSR --models s_1_mito --use_tiles --gpu 0 
+python image_gen.py stats/LR stats/LR-PSSR --models s_1_mito --use_tiles --gpu 0
 """
 
 import sys
@@ -226,11 +226,11 @@ def process_files(src_dir, out_dir, model_dir, baseline_dir, processor, mode, us
 def main(
         src_dir: Param("source dir", Path, opt=False),
         out_dir: Param("ouput dir", Path, opt=False),
-        model_dir: Param("model dir", Path) = 'stats/models',
+        model_dir: Param("model dir", Path) = 'models/pkl_files',
         gpu: Param("GPU to run on", int, required=True) = None,
         models: Param("list models to run", str, nargs='+')=None,
         baselines: Param("build bilinear", action='store_true')=False,
-        use_tiles: Param("flag for tile inference", action='store_True')=False,
+        use_tiles: Param("flag for tile inference", action='store_true')=False,
         mode: Param("L or RGBA", str)='L',
 ):
     print('on gpu: ', gpu)

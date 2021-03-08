@@ -33,8 +33,8 @@ Parameters:
 - clip_grad: float, gradient clipping, None by default. (optional)
 - loss_scale: float, loss scale, None by default. (optional)
 - feat_loss: boolean, feat_loss, False by default. (optional)
-- n_frames: int, number of frames, 1 by default. (optional)
-- lr_type: str, training input, (s)ingle, (t) multi or (z) multi, 's' by default. (optional)
+- n_frames: int, number of frames
+- lr_type: str, training input, (s)ingle, (t) multi or (z) multi, 's', 't', or 'z'
 - plateau: boolean, cut LR on plateaus, False by default. (optional)
 - old_unet: boolean, use old unet_learner, False by default. (optional)
 - skip_train: boolean, skip training, e.g. to adjust size, False by default. (optional)
@@ -53,17 +53,17 @@ Examples:
 -------
 Example 1: Train a singleframe model
 Train 50 epochs first, and continue training with another 50 epochs.
-python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_5000_AG_SP
-          --cycles 50 --save_name single_mito_5000_AG_SP_e50 --lr_type s --n_frames 1
-python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_5000_AG_SP
-          --cycles 50 --save_name single_mito_5000_AG_SP_e100 --load_name single_mito_5000_AG_SP_e50_best_512 --lr_type s --n_frames 1
+python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_AG_SP
+          --cycles 50 --save_name single_mito_AG_SP_e50 --lr_type s --n_frames 1
+python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname single_mito_AG_SP
+          --cycles 50 --save_name single_mito_AG_SP_e100 --load_name single_mito_AG_SP_e50_best_512 --lr_type s --n_frames 1
 
 Example 2: Train a multiframe model
 Train 50 epochs first, and continue training with another 50 epochs.
-python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_5000_AG_SP
-          --cycles 50 --save_name multit_5_mito_5000_AG_SP_e50 --lr_type t --n_frames 5
-python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_5000_AG_SP
-          --cycles 50 --save_name multit_5_mito_5000_AG_SP_e100 --load_name multit_5_mito_5000_AG_SP_e50_best_512 --lr_type t --n_frames 5
+python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_AG_SP
+          --cycles 50 --save_name multit_5_mito_AG_SP_e50 --lr_type t --n_frames 5
+python -m fastai.launch  train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname multi_mito_AG_SP
+          --cycles 50 --save_name multit_5_mito_AG_SP_e100 --load_name multit_5_mito_AG_SP_e50_best_512 --lr_type t --n_frames 5
 """
 
 import yaml
@@ -143,7 +143,7 @@ def main(
         size: Param("img size", int) = 256,
         cycles: Param("num cyles", int) = 5,
         load_name: Param("load model name", str) = None,
-        save_name: Param("model save name", str) = 'combo',
+        save_name: Param("model save name", str) = 'saved_model',
         datasetname: Param('dataset name', str) = 'tiles_002',
         tile_sz: Param('tile_sz', int) = 256,
         attn: Param('self attention', bool)=True,
@@ -159,8 +159,8 @@ def main(
         clip_grad: Param('gradient clipping', float) = None,
         loss_scale: Param('loss scale', float) = None,
         feat_loss: Param('feat_loss', action='store_true')=False,
-        n_frames: Param('number of frames', int) = 1,
-        lr_type: Param('training input, (s)ingle, (t) multi or (z) multi', str)='s',
+        n_frames: Param('number of frames', int) = None,
+        lr_type: Param('training input, (s)ingle, (t) multi or (z) multi', str)=None,
         plateau: Param('cut LR on plateaus', action='store_true')=False,
         old_unet: Param('use old unet_learner', action='store_true')=False,
         skip_train: Param('skip training, e.g. to adjust size', action='store_true') = False,
@@ -180,18 +180,16 @@ def main(
 
     data_path = Path('.')
     datasets = data_path/'datasets'
-    datasources = data_path/'data'
     dataset = datasets/datasetname
-    pickle_models = data_path/'stats/models'
+    pickle_models = ensure_folder(data_path/'models/pkl_files')
+    model_dir = ensure_folder(data_path/'models/pth_files')
 
     if tile_sz is None:
         hr_tifs = dataset/f'hr'
         lr_tifs = dataset/f'lr'
     else:
-        hr_tifs = dataset/f'hr_t_{tile_sz:d}{multi_str}'
-        lr_tifs = dataset/f'lr_t_{tile_sz:d}{multi_str}'
-
-    model_dir = 'models'
+        hr_tifs = dataset/f'hr_{lr_type}_{tile_sz:d}{multi_str}'
+        lr_tifs = dataset/f'lr_{lr_type}_{tile_sz:d}{multi_str}'
 
     if not debug:
         gpu = setup_distrib(gpu)
@@ -212,6 +210,10 @@ def main(
     size = size
     arch = eval(arch)
 
+    save_name = f'{lr_type}_{n_frames}_{save_name}_e{cycles}'
+    
+    print(f'hr dataset path: {hr_tifs}')
+    print(f'lr dataset path: {lr_tifs}')
     print('bs:', bs, 'size: ', size, 'ngpu:', n_gpus)
     data = get_data(bs, size, lr_tifs, hr_tifs, n_frames=n_frames,  max_zoom=4.,
                     use_cutout=cutout, use_noise=noise, mode=mode, norm=norm)

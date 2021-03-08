@@ -13,7 +13,7 @@ each subcategory need to be split into folder 'train' and 'valid' beforehand.
 
 The datasource folder has to follow the hierarchy as below:
 - datasources
-  |- datasource1
+  |- live
   |  |- subcategory1
   |  |  |- train
   |  |  |   |- img1
@@ -35,38 +35,37 @@ The datasource folder has to follow the hierarchy as below:
   |  |      |- ...
   |  |- ...
   |
-  |- datasource2
-  |  |- subcategory1
-  |  |  |- train
-  |  |  |   |- img1
-  |  |  |   |- img2
-  |  |  |   |- ...
-  |  |  |- valid
-  |  |      |- img1
-  |  |      |- img2
-  |  |      |- ...
-  |  |
-  |  |- subcategory2
-  |  |  |- train
-  |  |  |   |- img1
-  |  |  |   |- img2
-  |  |  |   |- ...
-  |  |  |- valid
-  |  |      |- img1
-  |  |      |- img2
-  |  |      |- ...
-  |  |- ...
-  |- ...
+  |- fixed
+     |- subcategory1
+     |  |- train
+     |  |   |- img1
+     |  |   |- img2
+     |  |   |- ...
+     |  |- valid
+     |      |- img1
+     |      |- img2
+     |      |- ...
+     |
+     |- subcategory2
+     |  |- train
+     |  |   |- img1
+     |  |   |- img2
+     |  |   |- ...
+     |  |- valid
+     |      |- img1
+     |      |- img2
+     |      |- ...
+     |- ...
 
 Notes:
 -------
-1. Except folders named 'train' or 'valid', all folders and files can be
-changed to other names accrodingly.
+1. Except folders named 'fixed' or 'live' (which refers to live cell or fixed samples),
+'train' or 'valid', all other folders and files can be changed to different names accrodingly.
 2. tif/tiff and czi, the two most widely used scientific image formats are
 supported. Here are some additional important information:
-- czi images: 3D (XYZ) and 4D (XYZT) stacks are both acceptable. For multi-channel
+- czi images: 3D (XYZ) and 4D (XYZT) stacks are acceptable. For multi-channel
               images, only the first channel will be included (editable in the script).
-- tif/tiff images: Only 3D (XYZ/XYT) stacks are acceptable. Hyperstack images are
+- tif/tiff images: 2D (XY) or 3D (XYZ/XYT) stacks are acceptable. Hyperstack images are
                    recommended to be preprocessed in ImageJ/FIJI.
 
 Parameters:
@@ -120,7 +119,7 @@ Following are a couple of examples showing how to generate the metadata
 from the datasource in different ways. Given the datasource folder is strctured
 as below:
 - datasources
-  |- live_samples
+  |- live
   |  |- mitotracker
   |  |  |- train
   |  |  |   |- mito_train1.tif
@@ -141,7 +140,7 @@ as below:
   |         |- microtubules_valid2.tif
   |         |- ...
   |
-  |- fixed_samples
+  |- fixed
      |- neurons
      |  |- train
      |  |   |- neurons_train1.tif
@@ -163,19 +162,19 @@ as below:
             |- ...
 
 Example 1:
-Only 'mitotracker' folder in datasource 'live_samples' is needed. Name output
+Only 'mitotracker' folder in datasource 'live' is needed. Name output
 .csv file as 'live_mitotracker.csv'
-python gen_sample_info.py --only mitotracker --out live_mitotracker.csv datasources/live_samples
+python gen_sample_info.py --only mitotracker --out live_mitotracker.csv datasources/live
 
 Example 2:
-All subcategories in datasource 'live_samples' are needed for training. Name
+All subcategories in datasource 'live' are needed for training. Name
 output file as 'live.csv'.
-python gen_sample_info.py --out live.csv datasources/live_samples
+python gen_sample_info.py --out live.csv datasources/live
 
 Example 3:
-All subcategroies in datasource 'fixed_samples' are needed for training except
+All subcategroies in datasource 'fixed' are needed for training except
 files in 'microtubules'. Name output file as 'live.csv'
-python gen_sample_info.py --skip microtubules --out live.csv datasources/fixed_samples
+python gen_sample_info.py --skip microtubules --out live.csv datasources/fixed
 
 Example 4:
 Everything in folder 'datasources' are needed. Name output .csv file as 'all.csv'
