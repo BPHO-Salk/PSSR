@@ -86,18 +86,18 @@ Step 1: Understand your datasource (see details in [gen_sample_info.py](https://
 
 - Example: `python gen_sample_info.py --only mitotracker --out live_mitotracker.csv datasources/live`
 
-Step 2: Generate your training data (see details in tile_from_info.py)
+Step 2: Generate your training data (see details in [tile_from_info.py](https://github.com/BPHO-Salk/PSSR/tree/master/tile_from_info.py))
 
 - Singleframe example: `python tile_from_info.py --out datasets --info live_mitotracker.csv --n_train 80 --n_valid 20 --n_frames 1 --lr_type s --tile 512 --only mitotracker --crap_func 'new_crap_AG_SP'`
 
 - Multiframe example: `python tile_from_info.py --out datasets --info live_mitotracker.csv --n_train 80 --n_valid 20 --n_frames 5 --lr_type t --tile 512 --only mitotracker --crap_func 'new_crap_AG_SP'`
 
-Step 3: Train your PSSR model (see details in train.py)
+Step 3: Train your PSSR model (see details in [train.py](https://github.com/BPHO-Salk/PSSR/tree/master/train.py))
 - Singleframe example: `python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname s_1_live_mitotracker_new_crap_AG_SP --cycles 50 --save_name mito_AG_SP --lr_type s --n_frames 1`
 
 - Multiframe example: `python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname t_5_live_mitotracker_new_crap_AG_SP --cycles 50 --save_name mito_AG_SP --lr_type t --n_frames 5`
 
-Step 4: Run inference on test data (see details in image_gen.py)
+Step 4: Run inference on test data (see details in [image_gen.py](https://github.com/BPHO-Salk/PSSR/tree/master/image_gen.py))
 
 - Singleframe example: `python image_gen.py stats/LR stats/LR-PSSR --models s_1_mito_AG_SP_e50_512 --use_tiles --gpu 0`
 
