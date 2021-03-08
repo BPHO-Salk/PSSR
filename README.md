@@ -6,11 +6,14 @@ BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](
 
 There is also a beautifully written [PSSR Tweetorial](https://twitter.com/manorlaboratory/status/1169624396891185152?s=20) that explains the whole development story of PSSR.
 
+**Update**: This work has been published in Nature Methods.
 
-![PSSR](example_imgs/em_test_results.png)
+![EM](example_imgs/em_test_results.png)
+
+[comment]: <![Fluo]()> 
 
 - [Overview](#overview)
-- [Data Availability](#data-availablity)
+- [Data Availability](#data-availability)
 - [Instruction of Use](#instruction-of-use)
 - [Citation](#citation)
 - [License](#license)
@@ -23,9 +26,16 @@ Here we show these limitations can be mitigated via the use of Deep Learning-bas
 # Data Availability
 
 All data are hosted in 3DEM Dataverse: https://doi.org/10.18738/T8/YLCK5A, which include:
-* Training, testing, and validation data
-* Pretrained PSSR models for each image type described in the PSSR manuscript 
-* Environment set-up env.yml file that lists all prerequisite libraries.
+- Main models: pretrained models, training and testing data for major PSSR models, including
+    - EM (neural tissue imaged on a tSEM)
+    - Mitotracker (live imaging of cultured U2OS cells on a ZEISS Airyscan 880 confocal) 
+    - Neuronal mitochondria (live imaigng of hippocampal neurons from neonatal rats transfected with mito-dsRed imaged on a ZEISS Airyscan 880 confocal)
+ 
+- Supporting experiments: data for the supporting experiments, including
+    - comparison between PSSR and BM3D denosing for both EM and fluorescence Mitotracker data
+    - crappifier comparison for both EM and fluorescence Mitotracker data
+    - compariosn between PSSR, CARE and Rolling Average for fluorescence Mitotracker data
+
 
 # Instruction of Use
 
@@ -49,9 +59,47 @@ PSSR is mainly written with Fastai, and final models used in the manuscript were
 ### Environment Set-up
 - Install Anaconda ([Learn more](https://docs.anaconda.com/anaconda/install/))
 - Create a new conda environment for PSSR: `conda env create --file=env.yaml` ([Learn more](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
+- Download the repo from Github: 
+  `git clone https://github.com/BPHO-Salk/PSSR.git`
 
-### Example Use: EM Inference
+- Create a conda environment for pssr:
+  `conda create --name pssr python=3.7`
+
+- Activate the conda environment:
+  `conda activate pssr`
+
+- Install PSSR dependencies:
+  
+  `pip install fastai==1.0.55 tifffile czifile scikit-image`
+  
+  `pip uninstall torch` (you may need to run this multiple times)
+  
+  `conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch`
+  
+### Scenario 1: Inference using our pretrained models
 Please refer to the handy [Inference_PSSR_for_EM.ipynb](https://github.com/BPHO-Salk/PSSR/blob/master/Inference_PSSR_for_EM.ipynb). You need to modify the path for the test images accordingly. Note the input pixel size needs to be 8 nm.
+
+### Scenario 2: Train your own data
+Step 1: Understand your datasource (see details in gen_sample_info.py)
+
+- Example: `python gen_sample_info.py --only mitotracker --out live_mitotracker.csv datasources/live`
+
+Step 2: Generate your training data (see details in tile_from_info.py)
+
+- Singleframe example: `python tile_from_info.py --out datasets --info live_mitotracker.csv --n_train 80 --n_valid 20 --n_frames 1 --lr_type s --tile 512 --only mitotracker --crap_func 'new_crap_AG_SP'`
+
+- Multiframe example: `python tile_from_info.py --out datasets --info live_mitotracker.csv --n_train 80 --n_valid 20 --n_frames 5 --lr_type t --tile 512 --only mitotracker --crap_func 'new_crap_AG_SP'`
+
+Step 3: Train your PSSR model (see details in train.py)
+- Singleframe example: `python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname s_1_live_mitotracker_new_crap_AG_SP --cycles 50 --save_name mito_AG_SP --lr_type s --n_frames 1`
+
+- Multiframe example: `python -m fastai.launch train.py --bs 8 --lr 4e-4 --size 512 --tile_sz 512 --datasetname t_5_live_mitotracker_new_crap_AG_SP --cycles 50 --save_name mito_AG_SP --lr_type t --n_frames 5`
+
+Step 4: Run inference on test data (see details in image_gen.py)
+
+- Singleframe example: `python image_gen.py stats/LR stats/LR-PSSR --models s_1_mito_AG_SP_e50_512 --use_tiles --gpu 0`
+
+- Multiframe example: `python image_gen.py stats/LR stats/LR-PSSR --models t_5_mito_AG_SP_e50_512 --use_tiles --gpu 0`
 
 # Citation
 Please cite our work if you find it useful for your research: 
