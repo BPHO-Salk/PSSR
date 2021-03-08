@@ -60,7 +60,7 @@ PSSR is mainly written with Fastai, and final models used in the manuscript were
 
 ### Environment Set-up
 - Install Anaconda ([Learn more](https://docs.anaconda.com/anaconda/install/))
-- Create a new conda environment for PSSR: `conda env create --file=env.yaml` ([Learn more](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
+
 - Download the repo from Github: 
   `git clone https://github.com/BPHO-Salk/PSSR.git`
 
