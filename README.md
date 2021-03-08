@@ -4,7 +4,7 @@ This repository hosts the PyTorch implementation source code for Point-Scanning 
 
 BioRxiv Preprint: [Deep Learning-Based Point-Scanning Super-Resolution Imaging](https://www.biorxiv.org/content/10.1101/740548v3)
 
-There is also a beautifully written [PSSR Tweetorial](https://twitter.com/manorlaboratory/status/1169624396891185152?s=20) that explains the whole development story of PSSR.
+There is also a [PSSR Tweetorial](https://twitter.com/manorlaboratory/status/1169624396891185152?s=20) that explains the whole development story of PSSR.
 
 **Update**: This work has been published in Nature Methods.
 
