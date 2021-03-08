@@ -82,7 +82,7 @@ PSSR is mainly written with Fastai, and final models used in the manuscript were
 Please refer to the handy [Inference_PSSR_for_EM.ipynb](https://github.com/BPHO-Salk/PSSR/blob/master/Inference_PSSR_for_EM.ipynb). You need to modify the path for the test images accordingly. Note the input pixel size needs to be 8 nm.
 
 ### Scenario 2: Train your own data
-Step 1: Understand your datasource (see details in gen_sample_info.py)
+Step 1: Understand your datasource (see details in [gen_sample_info.py](https://github.com/BPHO-Salk/PSSR/tree/master/gen_sample_info.py))
 
 - Example: `python gen_sample_info.py --only mitotracker --out live_mitotracker.csv datasources/live`
 
