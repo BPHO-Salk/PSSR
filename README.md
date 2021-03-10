@@ -74,9 +74,9 @@ PSSR is mainly written with Fastai, and final models used in the manuscript were
 
 - Install PSSR dependencies:
   
-  `pip install fastai==1.0.55 tifffile czifile scikit-image`
+  `pip install fastai==1.0.55 tifffile libtiff czifile scikit-image`
   
-  `pip uninstall torch` (you may need to run this multiple times)
+  `pip uninstall torch torchvision` (you may need to run this multiple times)
   
   `conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch`
   
