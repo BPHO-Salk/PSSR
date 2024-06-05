@@ -1,4 +1,4 @@
-**UPDATE**: PSSR is now available as a package at [ucsdmanorlab/PSSR](https://github.com/ucsdmanorlab/PSSR)
+**UPDATE**: PSSR is now available as an updated and improved package at [ucsdmanorlab/PSSR](https://github.com/ucsdmanorlab/PSSR)
 # Point-Scanning Super-Resolution (PSSR)
 
 This repository hosts the PyTorch implementation source code for Point-Scanning Super-Resolution (PSSR), a Deep Learning-based framework that faciliates otherwise unattainable resolution, speed and sensitivity of point-scanning imaging systems (e.g. scanning electron or laser scanning confocal microscopes). 
